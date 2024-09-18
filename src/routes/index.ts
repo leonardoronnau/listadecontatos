@@ -1,12 +1,13 @@
-import { error } from "console";
+
 import express from "express";
-import { readFile, writeFile } from "fs/promises";
 
 
+// criei uma service para que as funcções sejam esportadas para o codigo ficar mais limpo
+import { createContact, deleteContact, getContacts } from "../services/contatcs";
 
-const dataSource = './data/list.txt'
+
 const router = express.Router()
-
+// criação do contato
 router.post('/contato', async (req, res) => {
     const {name} = req.body;
 
@@ -14,43 +15,21 @@ router.post('/contato', async (req, res) => {
        return res.json({error: ' está sem as caracteres necessarias'})
     }
 
-    //processo de dados 
-
-    let list: string [] = []
-    try {
-        const data = await readFile(dataSource, {encoding: 'utf8'})
-       list = data.split('\n')
-
-    }catch(err) {}
-
-
-
-    list.push(name)
-    await writeFile(dataSource, list.join('\n'))
-
+   await createContact(name)
     res.status(201).json({ contato: name})
 
 })
 
 
-
+// pegar o a lista de contatos
 router.get('/contatos', async (req, res) => {
-
-    
-    let list: string [] = []
-    try {
-        const data = await readFile(dataSource, {encoding: 'utf8'})
-       list = data.split('\n')
-
-    }catch(err) {}
-
-
+    let list = await getContacts()
     res.json({contatos: list})
 
 })
 
 
-
+//excluir um contato
 router.delete('/contato', async (req, res)=> {
     const {name} = req.query;
 
@@ -58,21 +37,11 @@ router.delete('/contato', async (req, res)=> {
        return res.json({error: ' está sem as caracteres necessarias'})
     }
 
-    //processo de dados 
-
-    let list: string [] = []
-    try {
-        const data = await readFile(dataSource, {encoding: 'utf8'})
-       list = data.split('\n')
-
-    }catch(err) {}
-
-    list = list.filter(item => item !== name)
-    await writeFile(dataSource, list.join('\n'))
+  await deleteContact(name as string)
     res.json({ contato: name})
-
-
 })
+
+
 export default router;
 
 
@@ -80,18 +49,3 @@ export default router;
 
 
 
-
-
-// criar uma variavel para amazenar o nome do contato na requisição do body
-
-// depois vou fazeer o processo inverso vou fazer um if porem ele de negação!
-// em seugida ele vai retornar um error para  caso esteja em branco o name ou menos de 2 letras
-
-
-//processamento de dados 
-
-// criar uma lista  vazia
-
-// criar um try catch
-
-// criar uma pasta e criar uma variavel para indicar o caminho dela.
