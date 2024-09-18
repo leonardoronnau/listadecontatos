@@ -48,6 +48,31 @@ router.get('/contatos', async (req, res) => {
     res.json({contatos: list})
 
 })
+
+
+
+router.delete('/contato', async (req, res)=> {
+    const {name} = req.query;
+
+    if(!name) {
+       return res.json({error: ' está sem as caracteres necessarias'})
+    }
+
+    //processo de dados 
+
+    let list: string [] = []
+    try {
+        const data = await readFile(dataSource, {encoding: 'utf8'})
+       list = data.split('\n')
+
+    }catch(err) {}
+
+    list = list.filter(item => item !== name)
+    await writeFile(dataSource, list.join('\n'))
+    res.json({ contato: name})
+
+
+})
 export default router;
 
 
